@@ -2,9 +2,11 @@ package org.example.client;
 
 import lombok.Getter;
 import net.sourceforge.argparse4j.*;
-import net.sourceforge.argparse4j.impl.*;
 import net.sourceforge.argparse4j.inf.*;
 
+/**
+ * Parse command line arguments
+ */
 public class ParametersParser {
 
     @Getter
@@ -18,49 +20,48 @@ public class ParametersParser {
     @Getter
     private String file;
 
-    private ArgumentParser parser = ArgumentParsers.newFor("Client").build();
+    private final ArgumentParser PARSER = ArgumentParsers.newFor("Client").build();
 
     ParametersParser() {
-        parser.addArgument("-p", "--port")
+        PARSER.addArgument("-p", "--port")
                 .type(Integer.class)
                 .required(true)
-                .help("Puerto del servidor");
+                .help("RequestManager TCP Port");
 
-        parser.addArgument("-a", "--address")
+        PARSER.addArgument("-a", "--address")
                 .type(String.class)
                 .required(true)
-                .help("Dirección IP del servidor");
+                .help("RequestManager ip address");
 
-        parser.addArgument("-t", "--timeout")
+        PARSER.addArgument("-t", "--timeout")
                 .type(Integer.class)
                 .setDefault(5000)
-                .help("Timeout en milisegundos (por defecto 5000)");
+                .help("Timeout in milliseconds (5000 by default)");
 
-        parser.addArgument("-r", "--retries")
+        PARSER.addArgument("-r", "--retries")
                 .type(Integer.class)
                 .setDefault(5)
-                .help("Número de intentos (por defecto 5)");
+                .help("Number of retries (5 by default)");
 
-        parser.addArgument("-f", "--file")
+        PARSER.addArgument("-f", "--file")
                 .type(String.class)
                 .required(true)
-                .help("Path hacia el archivo a leer");
+                .help("Input file path");
     }
 
     void parseParameters(String[] args) throws ArgumentParserException {
         // Obtener los parámetros
-        Namespace ns = parser.parseArgs(args);
-        this.port = ns.getInt("port");
-        this.address = ns.getString("address");
-        this.timeout = ns.getInt("timeout");
-        this.retries = ns.getInt("retries");
-        this.file = ns.getString("file");
+        Namespace argumentsNamespace = PARSER.parseArgs(args);
+        this.port = argumentsNamespace.getInt("port");
+        this.address = argumentsNamespace.getString("address");
+        this.timeout = argumentsNamespace.getInt("timeout");
+        this.retries = argumentsNamespace.getInt("retries");
+        this.file = argumentsNamespace.getString("file");
+    }
 
-        // Loggearlos
-        System.out.println("Puerto: " + this.port);
-        System.out.println("Dirección IP: " + this.address);
-        System.out.println("Timeout: " + this.timeout);
-        System.out.println("Intentos: " + this.retries);
-        System.out.println("Archivo: " + this.file);
+    @Override
+    public String toString() {
+        return String.format("ParametersParser={port:%d, ip:%s, timeout:%d, retries:%d, file:%s}",
+                this.port, this.address, this.timeout, this.retries, this.file);
     }
 }

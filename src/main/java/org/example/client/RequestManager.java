@@ -2,26 +2,28 @@ package org.example.client;
 
 import lombok.NonNull;
 import org.example.exceptions.SocketException;
-import org.example.exceptions.UnableToConnectException;
 import org.example.exceptions.UnableToCreateSocket;
 import org.example.exceptions.UnsuccessfullRequest;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
+/**
+ * Build and make request to the server
+ */
 public class RequestManager {
 
     private final int REQUEST_TIMEOUT;
     private final int REQUEST_RETRIES;
     private final String SERVER_ENDPOINT;
 
-    RequestManager(int timeout, int retries, String endpoint) {
+    public RequestManager(int timeout, int retries, String endpoint) {
         this.REQUEST_TIMEOUT = timeout;
         this.REQUEST_RETRIES = retries;
         this.SERVER_ENDPOINT = endpoint;
     }
 
-    @NonNull String createRequest(String operation) {
+    public @NonNull String createRequest(String operation) {
         // Crear un nuevo contexto de ZeroMQ
         try (ZContext ctx = new ZContext()) {
             // Crear un socket de tipo Request REQ
@@ -42,32 +44,29 @@ public class RequestManager {
 
             // Enviar el contenido de la petición UTF-8
             requestSocket.send(operation.getBytes(ZMQ.CHARSET));
-            System.out.println("Petición enviada");
 
-            for (int retriesLeft = REQUEST_RETRIES;
-                 retriesLeft > 0 && !Thread.currentThread().isInterrupted();
-                 retriesLeft--) {
+            for (int retriesLeft = 0;
+                 retriesLeft < REQUEST_RETRIES && !Thread.currentThread().isInterrupted();
+                 retriesLeft++) {
 
                 // Recibir la respuesta (timeout en ms)
                 int pollerResult = poller.poll(REQUEST_TIMEOUT);
 
                 // Si hay error
                 if (pollerResult == -1) {
-                    System.err.println("Fallo en el Socket de Comunicación");
                     throw new SocketException();
                 } else if (pollerResult == 1) {
-                    System.out.println("Respuesta recibida");
                     break; // Ya hubo respuesta
                 }
 
-                System.err.println("No hubo respuesta, reintentando");
+                // Show retry
+                System.out.printf("INFO/ERR:\tRetrying (%d/%d)%n", retriesLeft + 1, REQUEST_RETRIES);
             }
 
             // Verificar si hay algo que se pueda leer
             if (poller.pollin(0)) {
                 return requestSocket.recvStr();
             } else {
-                System.err.println("No hubo respuesta del servidor");
                 throw new UnsuccessfullRequest(); // No hubo respuesta
             }
         }

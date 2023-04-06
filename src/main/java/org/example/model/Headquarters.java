@@ -1,9 +1,9 @@
 package org.example.model;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class Headquarters {
-    private Integer ID;
-    private String city;
+    Integer ID;
+    String city;
 }
