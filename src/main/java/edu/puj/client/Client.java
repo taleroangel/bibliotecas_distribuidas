@@ -1,20 +1,18 @@
-package org.example.client;
+package edu.puj.client;
 
 
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import org.example.exceptions.UnsuccessfullRequest;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 
 
 public class Client {
-    private static final String ENDPOINT = "tcp://localhost:5555";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalArgumentException, IOException {
         try {
             // 0. Parsear los parámetros
             ParametersParser arguments = new ParametersParser();
@@ -46,22 +44,7 @@ public class Client {
 
         } catch (ArgumentParserException e) {
             e.getParser().handleError(e);
-            System.exit(1);
-
-        } catch (IOException e) {
-            System.err.println("ERR: Failed to read from input file");
-            e.printStackTrace();
-            System.exit(1);
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("ERR: Input file format is invalid");
-            e.printStackTrace();
-            System.exit(1);
-
-        } catch (UnsuccessfullRequest ignored) {
-            System.err.println("ERR: Request couldn't be sent, server did not respond");
-            System.exit(1);
-
+            throw new IllegalArgumentException("Invalid Arguments: " + Arrays.toString(args));
         }
     }
 }

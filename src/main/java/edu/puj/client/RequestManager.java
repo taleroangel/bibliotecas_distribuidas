@@ -1,9 +1,9 @@
-package org.example.client;
+package edu.puj.client;
 
+import edu.puj.exceptions.UnableToCreateSocket;
 import lombok.NonNull;
-import org.example.exceptions.SocketException;
-import org.example.exceptions.UnableToCreateSocket;
-import org.example.exceptions.UnsuccessfullRequest;
+import edu.puj.exceptions.SocketException;
+import edu.puj.exceptions.UnsuccessfullRequest;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;

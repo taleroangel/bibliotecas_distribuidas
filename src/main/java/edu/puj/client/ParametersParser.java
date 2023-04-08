@@ -1,4 +1,4 @@
-package org.example.client;
+package edu.puj.client;
 
 import lombok.Getter;
 import net.sourceforge.argparse4j.*;

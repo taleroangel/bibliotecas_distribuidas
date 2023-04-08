@@ -1,4 +1,4 @@
-package org.example.load_manager;
+package edu.puj.manager;
 
 import lombok.Getter;
 import net.sourceforge.argparse4j.*;
@@ -38,6 +38,6 @@ public class ParametersParser {
 
     @Override
     public String toString() {
-        return String.format("ParametersParser={port:%d}", this.port);
+        return String.format("ParametersParser={port:%d, clients=%d}", this.port, this.clients);
     }
 }

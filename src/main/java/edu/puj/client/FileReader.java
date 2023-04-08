@@ -1,10 +1,8 @@
-package org.example.client;
+package edu.puj.client;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 /**
  * Read operations from files
@@ -12,9 +10,14 @@ import java.util.regex.Pattern;
 public class FileReader {
 
     /**
+     * Maximum number of operations in file
+     */
+    public static final int MAXIMUM_LENGTH = 20;
+
+    /**
      * Pattern matching string
      */
-    public static final String matchPattern = "([0-9]*;(?:SP|DL|RL))";
+    public static final String MATCH_PATTERN = "([0-9]*;(?:SP|DL|RL))";
 
     /**
      * Read each line of a file and store it in an ArrayList
@@ -30,9 +33,10 @@ public class FileReader {
             String line;
             while ((line = br.readLine()) != null) {
                 // Ejecutar un regex sobre la línea
-                assert line.matches(matchPattern);
+                assert line.matches(MATCH_PATTERN);
                 lines.add(line);
             }
+            assert lines.size() <= MAXIMUM_LENGTH;
         } catch (AssertionError ignored) {
             // En caso de que falle el REGEX
             throw new IllegalArgumentException();

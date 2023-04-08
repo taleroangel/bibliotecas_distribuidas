@@ -1,6 +1,6 @@
-package org.example.load_manager;
+package edu.puj.manager;
 
-import org.example.exceptions.SocketException;
+import edu.puj.exceptions.SocketException;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class RequestHandler extends Thread {
+
+    static final int CHECK_TIMER = 5000;
 
     final int SERVER_PORT;
     final int POLL_SIZE;
@@ -29,15 +31,13 @@ public class RequestHandler extends Thread {
 
             // Crear el poller y registrar el socket
             ZMQ.Poller poller = context.createPoller(POLL_SIZE);
-            System.out.println("INFO/POLL:\t" + poller.getSize());
             poller.register(socket, ZMQ.Poller.POLLIN);
 
             // While infinito (O hasta que se interrumpa el hilo)
+            System.out.println("INFO/START:\t" + LocalDateTime.now());
             while (!Thread.currentThread().isInterrupted()) {
                 // Bloquear el hilo con el pollers
-                System.out.println("\n" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
-                System.out.println("INFO/WAIT:\tBlocked");
-                int pollResult = poller.poll();
+                int pollResult = poller.poll(CHECK_TIMER);
 
                 // Resultado del poll
                 if (pollResult < 0) { // Hubo una falla en el socket
@@ -48,18 +48,20 @@ public class RequestHandler extends Thread {
                         if (poller.pollin(pollIndex)) {
                             // Receive the request
                             String request = socket.recvStr();
-                            System.out.println("\n" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
-                            System.out.println("INFO/RECV:\t" + request);
 
                             // TODO: Procesar la request
 
                             String response = "OK";
                             socket.send(response.getBytes(ZMQ.CHARSET));
-                            System.out.println("INFO/SEND:\t" + response);
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } finally {
+            System.out.println("INFO/STOP:\t" + LocalDateTime.now());
         }
     }
 }

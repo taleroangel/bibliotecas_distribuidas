@@ -1,9 +1,9 @@
-package org.example.load_manager;
+package edu.puj.manager;
 
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import org.zeromq.ZMQException;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.Arrays;
 
 public class LoadManager {
 
@@ -23,9 +23,11 @@ public class LoadManager {
 
         } catch (ArgumentParserException e) {
             e.getParser().handleError(e);
-            System.exit(1);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Invalid Arguments: " + Arrays.toString(args));
+        } catch (ZMQException e) {
+            throw new RuntimeException("Failed to bind socket: " + e);
+        } catch (InterruptedException ignored) {
+            System.err.println("Interrupted Thread");
         }
     }
 }
