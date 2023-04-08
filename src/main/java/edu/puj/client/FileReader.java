@@ -17,7 +17,7 @@ public class FileReader {
     /**
      * Pattern matching string
      */
-    public static final String MATCH_PATTERN = "([0-9]*;(?:SP|DL|RL))";
+    public static final String MATCH_PATTERN = "([0-9]*;[SDR])";
 
     /**
      * Read each line of a file and store it in an ArrayList
