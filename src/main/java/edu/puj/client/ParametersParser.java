@@ -1,28 +1,25 @@
 package edu.puj.client;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.ToString;
 import net.sourceforge.argparse4j.*;
 import net.sourceforge.argparse4j.inf.*;
 
-/**
- * Parse command line arguments
- */
+@Getter
+@ToString
 public class ParametersParser {
-
-    @Getter
     private int port;
-    @Getter
     private String address;
-    @Getter
     private int timeout;
-    @Getter
     private int retries;
-    @Getter
     private String file;
 
+    @ToString.Exclude
+    @Getter(AccessLevel.NONE)
     private final ArgumentParser PARSER = ArgumentParsers.newFor("Client").build();
 
-    ParametersParser() {
+    public ParametersParser() {
         PARSER.addArgument("-p", "--port")
                 .type(Integer.class)
                 .required(true)
@@ -49,7 +46,7 @@ public class ParametersParser {
                 .help("Input file path");
     }
 
-    void parseParameters(String[] args) throws ArgumentParserException {
+    public void parseParameters(String[] args) throws ArgumentParserException {
         // Obtener los parámetros
         Namespace argumentsNamespace = PARSER.parseArgs(args);
         this.port = argumentsNamespace.getInt("port");
@@ -57,11 +54,5 @@ public class ParametersParser {
         this.timeout = argumentsNamespace.getInt("timeout");
         this.retries = argumentsNamespace.getInt("retries");
         this.file = argumentsNamespace.getString("file");
-    }
-
-    @Override
-    public String toString() {
-        return String.format("ParametersParser={port:%d, ip:%s, timeout:%d, retries:%d, file:%s}",
-                this.port, this.address, this.timeout, this.retries, this.file);
     }
 }

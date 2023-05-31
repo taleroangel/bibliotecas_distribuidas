@@ -1,43 +1,53 @@
 package edu.puj.manager;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.ToString;
 import net.sourceforge.argparse4j.*;
 import net.sourceforge.argparse4j.inf.*;
 
-/**
- * Parse command line arguments
- */
+@Getter
+@ToString
 public class ParametersParser {
 
-    @Getter
-    private int port;
+    private Long port;
+    private Integer clients;
+    private Long publish;
 
-    @Getter
-    private int clients;
+    private Long subscribe;
 
+    @ToString.Exclude
+    @Getter(AccessLevel.NONE)
     private final ArgumentParser PARSER = ArgumentParsers.newFor("LoadManager").build();
 
     ParametersParser() {
         PARSER.addArgument("-p", "--port")
-                .type(Integer.class)
+                .type(Long.class)
                 .required(true)
-                .help("Connection TCP Port");
+                .help("Client connection TCP Port");
+
+        PARSER.addArgument("-s", "--subscribe")
+                .type(Long.class)
+                .required(true)
+                .help("Worker connection TCP Port for publishing");
+
+        PARSER.addArgument("-w", "--publish")
+                .type(Long.class)
+                .required(true)
+                .help("Worker connection TCP Port for subscribing results");
 
         PARSER.addArgument("-c", "--clients")
                 .type(Integer.class)
-                .setDefault(10)
-                .help("Number of concurrent clients (10 by default)");
+                .setDefault(15)
+                .help("Number of concurrent clients (15 by default)");
     }
 
-    void parseParameters(String[] args) throws ArgumentParserException {
+    public void parseParameters(String[] args) throws ArgumentParserException {
         // Obtener los parámetros
         Namespace argumentsNamespace = PARSER.parseArgs(args);
-        this.port = argumentsNamespace.getInt("port");
+        this.port = argumentsNamespace.getLong("port");
+        this.publish = argumentsNamespace.getLong("publish");
+        this.subscribe = argumentsNamespace.getLong("subscribe");
         this.clients = argumentsNamespace.getInt("clients");
-    }
-
-    @Override
-    public String toString() {
-        return String.format("ParametersParser={port:%d, clients=%d}", this.port, this.clients);
     }
 }

@@ -14,11 +14,11 @@
     <hashTree>
       <com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup guiclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroupGui" testclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup" testname="Client - Concurrency Thread Group" enabled="true">
         <elementProp name="ThreadGroup.main_controller" elementType="com.blazemeter.jmeter.control.VirtualUserController"/>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <stringProp name="TargetLevel">1500</stringProp>
-        <stringProp name="RampUp">5</stringProp>
-        <stringProp name="Steps">50</stringProp>
-        <stringProp name="Hold">3</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <stringProp name="TargetLevel">5000</stringProp>
+        <stringProp name="RampUp">15</stringProp>
+        <stringProp name="Steps">100</stringProp>
+        <stringProp name="Hold"></stringProp>
         <stringProp name="LogFilename"></stringProp>
         <stringProp name="Iterations"></stringProp>
         <stringProp name="Unit">M</stringProp>
@@ -29,7 +29,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="serverAddress" elementType="Argument">
                 <stringProp name="Argument.name">serverAddress</stringProp>
-                <stringProp name="Argument.value">localhost</stringProp>
+                <stringProp name="Argument.value">192.168.24.10</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="serverPort" elementType="Argument">
@@ -39,7 +39,7 @@
               </elementProp>
               <elementProp name="clientFile" elementType="Argument">
                 <stringProp name="Argument.name">clientFile</stringProp>
-                <stringProp name="Argument.value">/home/angel/Development/bibliotecas_distribuidas/test/test_no_worker.txt</stringProp>
+                <stringProp name="Argument.value">/home/angel/Development/bibliotecas_distribuidas/test/test_single_request.txt</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="clientRetries" elementType="Argument">
@@ -49,7 +49,7 @@
               </elementProp>
               <elementProp name="clientTimeout" elementType="Argument">
                 <stringProp name="Argument.name">clientTimeout</stringProp>
-                <stringProp name="Argument.value">1500</stringProp>
+                <stringProp name="Argument.value">15000</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>

@@ -14,12 +14,23 @@ public class LoadManager {
             arguments.parseParameters(args);
             System.out.println("INFO/ARGS:\t" + arguments);
 
-            // 1. Crear los thread pools
-            final var requestHandler = new RequestHandler(
-                    arguments.getPort(), arguments.getClients());
+            // Crear el controlador de recursos
+            final var resourceController = new ResourceAssignationController(arguments.getPublish(), arguments.getSubscribe());
+            final var resourceControllerThread = new Thread(resourceController);
 
+            // Crear el manejador de solicitudes
+            final var requestHandler = new RequestHandler(arguments.getPort(), arguments.getClients(), resourceController);
+
+            // Iniciar el controlador de recursos
+            resourceControllerThread.start();
+
+            // Iniciar el manejador de solitudes
             requestHandler.start();
             requestHandler.join();
+
+            // Detener el controlador de recursos
+            resourceControllerThread.interrupt();
+            resourceControllerThread.join();
 
         } catch (ArgumentParserException e) {
             e.getParser().handleError(e);

@@ -1,0 +1,124 @@
+{
+  "docs": [
+    {
+      "id": 1,
+      "nombre": "El Gran Gatsby",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 2,
+      "nombre": "1984",
+      "prestado": true,
+      "fecha_entrega": "2023-06-15"
+    },
+    {
+      "id": 3,
+      "nombre": "Orgullo y prejuicio",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 4,
+      "nombre": "Cien años de soledad",
+      "prestado": true,
+      "fecha_entrega": "2023-06-05"
+    },
+    {
+      "id": 5,
+      "nombre": "Matar a un ruiseñor",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 6,
+      "nombre": "Don Quijote de la Mancha",
+      "prestado": true,
+      "fecha_entrega": "2023-06-10"
+    },
+    {
+      "id": 7,
+      "nombre": "Ulises",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "nombre": "En busca del tiempo perd_ido",
+      "id": 8,
+      "prestado": true,
+      "fecha_entrega": "2023-06-02"
+    },
+    {
+      "id": 9,
+      "nombre": "Moby Dick",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 10,
+      "nombre": "Las aventuras de Alicia en el país de las maravillas",
+      "prestado": true,
+      "fecha_entrega": "2023-06-15"
+    },
+    {
+      "id": 11,
+      "nombre": "El gran diseño",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 12,
+      "nombre": "El señor de los anillos",
+      "prestado": true,
+      "fecha_entrega": "2023-06-08"
+    },
+    {
+      "id": 13,
+      "nombre": "Crónica de una muerte anunciada",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 14,
+      "nombre": "Los pilares de la Tierra",
+      "prestado": true,
+      "fecha_entrega": "2023-06-04"
+    },
+    {
+      "id": 15,
+      "nombre": "El principito",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 16,
+      "nombre": "El alquimista",
+      "prestado": true,
+      "fecha_entrega": "2023-06-02"
+    },
+    {
+      "id": 17,
+      "nombre": "Los juegos del hambre",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 18,
+      "nombre": "Fahrenheit 451",
+      "prestado": true,
+      "fecha_entrega": "2023-06-06"
+    },
+    {
+      "id": 19,
+      "nombre": "Rayuela",
+      "prestado": false,
+      "fecha_entrega": ""
+    },
+    {
+      "id": 20,
+      "nombre": "El código Da Vinci",
+      "prestado": true,
+      "fecha_entrega": "2023-06-03"
+    }
+  ]
+}

@@ -1,30 +1,38 @@
 package edu.puj.manager;
 
 import edu.puj.exceptions.SocketException;
+import edu.puj.model.Operation;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class RequestHandler extends Thread {
 
-    static final int CHECK_TIMER = 5000;
+    public static final int CHECK_TIMER = 5000;
 
-    final int SERVER_PORT;
-    final int POLL_SIZE;
+    public final Long SERVER_PORT;
+    private final int POLL_SIZE;
 
-    RequestHandler(int port, int pollSize) {
+    private final ResourceAssignationController controller;
+
+    RequestHandler(Long port, int pollSize, ResourceAssignationController controller) {
         this.SERVER_PORT = port;
         this.POLL_SIZE = pollSize;
+
+        // Crear el controlador
+        this.controller = controller;
     }
+
+    private ZMQ.Socket socket;
 
     @Override
     public void run() {
         try (ZContext context = new ZContext()) {
             // Crear un socket de response
-            ZMQ.Socket socket = context.createSocket(SocketType.REP);
+            socket = context.createSocket(SocketType.REP);
+
             String connectionString = String.format("tcp://*:%d", SERVER_PORT);
             socket.bind(connectionString);
             System.out.println("INFO/BIND:\t" + connectionString);
@@ -35,6 +43,7 @@ public class RequestHandler extends Thread {
 
             // While infinito (O hasta que se interrumpa el hilo)
             System.out.println("INFO/START:\t" + LocalDateTime.now());
+
             while (!Thread.currentThread().isInterrupted()) {
                 // Bloquear el hilo con el pollers
                 int pollResult = poller.poll(CHECK_TIMER);
@@ -48,11 +57,32 @@ public class RequestHandler extends Thread {
                         if (poller.pollin(pollIndex)) {
                             // Receive the request
                             String request = socket.recvStr();
+                            System.out.println("\nINFO/REQ\t" + request);
 
-                            // TODO: Procesar la request
+                            // Convertir el request
+                            var operation = Operation.fromString(request);
 
-                            String response = "OK";
+                            String response = "OK"; // Respuesta
+                            switch (operation.getType()) {
+                                case RENOVAR:
+                                case DEVOLVER:
+                                    // Encolar la petición
+                                    controller.enqueueOperation(operation);
+                                    // No esperan una respuesta
+                                    break;
+
+                                case SOLICITAR:
+                                    //TODO: Aún no implementada
+
+                                default:
+                                    response = "FAIL"; // Cambiar la respuesta a fallida
+                                    System.err.println("ERR\tOperación no soportada");
+                                    break;
+                            }
+
+                            // Enviar la respuesta
                             socket.send(response.getBytes(ZMQ.CHARSET));
+                            System.out.println("INFO/RES\t" + response);
                         }
                     }
                 }
@@ -61,6 +91,10 @@ public class RequestHandler extends Thread {
             Thread.currentThread().interrupt();
             throw e;
         } finally {
+            if (socket != null) {
+                socket.close();
+            }
+
             System.out.println("INFO/STOP:\t" + LocalDateTime.now());
         }
     }
