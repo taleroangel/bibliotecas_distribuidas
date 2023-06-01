@@ -37,29 +37,84 @@ public class RequestHandler extends Thread {
             // Suscribirse a los tópicos
             listen.subscribe("DEVOLVER");
             listen.subscribe("RENOVAR");
-            listen.subscribe("SOLICITAR");
+
+            // Suscribirse a su propio ID
+            listen.subscribe(Worker.WORKER_ID);
 
             // Crear el socket de respuesta
             response = context.createSocket(SocketType.PUB);
             response.connect(MANAGER_PUBLISH);
 
             while (!Thread.currentThread().isInterrupted()) {
+
+                // Enviar conexión
+                response.sendMore("CONNECT".getBytes(ZMQ.CHARSET));
+                response.send(Worker.WORKER_ID.getBytes(ZMQ.CHARSET));
+
                 // Show the topic
                 String topic = listen.recvStr();
                 String message = listen.recvStr();
                 System.out.println("\nINFO/REC\t" + topic + " " + message);
+
+                Long libroId = Long.parseLong(message);
+                Libro libro = null;
+
+                try {
+                    libro = databaseQuerier.getLibro(libroId);
+                } catch (ItemNotFoundException e) {
+                    System.err.println("ERR/BOOK\tDoes not exist");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.err.println("ERR/INET\tFailed I/O");
+                }
 
                 // Failed response as default
                 String responseStr = "FAIL";
 
                 // Get book ID
                 boolean successUpdate = false;
-                Long libroId = Long.parseLong(message);
+                var calendar = Calendar.getInstance();
 
-                try {
-                    Libro libro = databaseQuerier.getLibro(libroId);
-                    var calendar = Calendar.getInstance();
+                // * Realizar préstamo!
+                if (topic.equals(Worker.WORKER_ID) && libro != null) {
 
+                    try {
+                        libro = databaseQuerier.getLibro(libroId);
+                    } catch (ItemNotFoundException e) {
+                        System.err.println("ERR/BOOK\tDoes not exist");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.err.println("ERR/INET\tFailed I/O");
+                    }
+
+                    // Solicitud no es posible
+                    if (libro.getPrestado()) {
+                        System.err.println("ERR\tEl libro ya fue prestado");
+                    } else {
+                        // Get current date + 1 week
+                        calendar = Calendar.getInstance();
+                        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+
+                        // Add it to book
+                        libro.setPrestado(true);
+                        libro.setDate(calendar.getTime());
+                        successUpdate = databaseQuerier.updateLibro(libro);
+                    }
+
+                    responseStr = successUpdate ? "OK" : "FAIL";
+                    final var responseBody = String.format("%s %s", responseStr, Worker.WORKER_ID);
+
+                    // Send the response
+                    response.sendMore("UNIQUE".getBytes(ZMQ.CHARSET));
+                    response.send(responseBody.getBytes(ZMQ.CHARSET));
+                    System.out.println("INFO/RES\t" + "UNIQUE" + ' ' + responseBody);
+
+                    // Coninuar con el bucle
+                    continue;
+                }
+
+                // Manejar los otros
+                if (libro != null) {
                     switch (topic) {
                         case "DEVOLVER":
                             // Solicitud no es posible
@@ -83,7 +138,6 @@ public class RequestHandler extends Thread {
 
                             // Update the date
                             calendar = Calendar.getInstance();
-                            calendar.setTime(libro.getDate());
                             calendar.add(Calendar.WEEK_OF_YEAR, 1);
                             libro.setDate(calendar.getTime());
 
@@ -91,37 +145,15 @@ public class RequestHandler extends Thread {
                             successUpdate = databaseQuerier.updateLibro(libro);
                             break;
 
-                        case "SOLICITAR":
-
-                            // Solicitud no es posible
-                            if (libro.getPrestado()) {
-                                break;
-                            }
-
-                            // Get current date + 1 week
-                            calendar = Calendar.getInstance();
-                            calendar.add(Calendar.WEEK_OF_YEAR, 1);
-
-                            // Add it to book
-                            libro.setPrestado(true);
-                            libro.setDate(calendar.getTime());
-
-                            successUpdate = databaseQuerier.updateLibro(libro);
-                            break;
-
                         default:
+                            // Subscripción
                             System.err.println("ERR\tComando no soportado");
                             break;
                     }
-
-                    // Prompt new response
-                    responseStr = successUpdate ? "OK" : "FAIL";
-
-                } catch (ItemNotFoundException e) {
-                    System.err.println("ERR/BOOK\tDoes not exist");
-                } catch (IOException e) {
-                    System.err.println("ERR/INET\tFailed I/O");
                 }
+
+                // Prompt new response
+                responseStr = successUpdate ? "OK" : "FAIL";
 
                 // Send the response
                 response.sendMore(responseStr.getBytes(ZMQ.CHARSET));
@@ -138,6 +170,9 @@ public class RequestHandler extends Thread {
             }
 
             if (response != null) {
+                // Enviar cierre
+                response.sendMore("DISCONNECT".getBytes(ZMQ.CHARSET));
+                response.send(Worker.WORKER_ID.getBytes(ZMQ.CHARSET));
                 response.close();
             }
 

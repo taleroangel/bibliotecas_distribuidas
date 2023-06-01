@@ -72,7 +72,8 @@ public class RequestHandler extends Thread {
                                     break;
 
                                 case SOLICITAR:
-                                    //TODO: Aún no implementada
+                                    response = controller.makeSolicitar(operation) ? "OK" : "FAIL";
+                                    break;
 
                                 default:
                                     response = "FAIL"; // Cambiar la respuesta a fallida

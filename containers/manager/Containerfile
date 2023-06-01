@@ -1,0 +1,8 @@
+FROM amazoncorretto:11
+
+WORKDIR /app
+COPY . .
+
+CMD java -jar main.jar -p 5550 -s 5552 -w 5551 -c 10
+
+EXPOSE 5550

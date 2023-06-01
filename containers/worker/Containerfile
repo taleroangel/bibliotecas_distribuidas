@@ -1,0 +1,11 @@
+FROM amazoncorretto:11
+
+ENV MANAGER_IP=localhost
+ENV DATABASE_ADDRESS=localhost:5984
+
+WORKDIR /app
+COPY . .
+
+CMD java -jar main.jar -m $MANAGER_IP -s 5551 -p 5552 -d $DATABASE_ADDRESS
+
+EXPOSE 5552

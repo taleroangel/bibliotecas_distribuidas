@@ -1,0 +1,108 @@
+version: "3.3"
+
+services:
+
+  manager:
+    build:
+      context: ./manager
+      dockerfile: Containerfile
+
+    ports:
+      - 5550:5550
+
+    expose:
+      - 5550
+
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.10.1"
+
+  database_1:
+    image: couchdb:3.3.2
+    env_file:
+      - .env
+    ports:
+      - 5984:5984
+    expose:
+      - 5984
+    volumes:
+      - database_1_volume:/opt/couchdb/data
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.30.1"
+
+  database_2:
+    image: couchdb:3.3.2
+    env_file:
+      - .env
+    ports:
+      - 24112:5984
+    expose:
+      - 24112
+    volumes:
+      - database_2_volume:/opt/couchdb/data
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.30.2"
+
+  database_3:
+    image: couchdb:3.3.2
+    env_file:
+      - .env
+    ports:
+      - 24113:5984
+    expose:
+      - 24113
+    volumes:
+      - database_3_volume:/opt/couchdb/data
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.30.3"
+
+  worker_1:
+    build:
+      context: ./worker
+      dockerfile: Containerfile
+    environment:
+      MANAGER_IP: "10.10.10.1"
+      DATABASE_ADDRESS: "10.10.30.1:5984"
+
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.20.1"
+
+  worker_2:
+    build:
+      context: ./worker
+      dockerfile: Containerfile
+    environment:
+      MANAGER_IP: "10.10.10.1"
+      DATABASE_ADDRESS: "10.10.30.2:5984"
+
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.20.2"
+
+  worker_3:
+    build:
+      context: ./worker
+      dockerfile: Containerfile
+    environment:
+      MANAGER_IP: "10.10.10.1"
+      DATABASE_ADDRESS: "10.10.30.3:5984"
+
+    networks:
+      bibliotecas_distribuidas_network:
+        ipv4_address: "10.10.20.3"
+
+volumes:
+  database_1_volume:
+  database_2_volume:
+  database_3_volume:
+
+networks:
+  bibliotecas_distribuidas_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16"

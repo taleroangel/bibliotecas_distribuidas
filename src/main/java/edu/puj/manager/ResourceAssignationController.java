@@ -8,7 +8,6 @@ import org.zeromq.ZMQException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Function;
 
 public class ResourceAssignationController implements Runnable {
 
@@ -22,6 +21,7 @@ public class ResourceAssignationController implements Runnable {
         pendingOperations = new LinkedBlockingQueue<>();
         queuedOperations = new LinkedBlockingQueue<>();
         responseSet = Collections.synchronizedSet(new HashSet<>());
+        workerMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     private final BlockingQueue<Operation> pendingOperations;
@@ -30,9 +30,52 @@ public class ResourceAssignationController implements Runnable {
 
     private final Set<Long> responseSet;
 
+    enum WorkerStatus {
+        UNUSED,
+        WAITING,
+        OK,
+        FAIL
+    }
+
+    private final Map<String, WorkerStatus> workerMap;
+
     public void enqueueOperation(Operation operation) {
         pendingOperations.add(operation);
         System.out.println("INFO/RAC (Queued)\t" + operation);
+    }
+
+    public Boolean makeSolicitar(Operation operation) {
+        while (workerMap.size() == 0) ; //Busy Wait
+
+        // Buscar un worker libre
+        String worker;
+        do {
+            final var randomIndex = new Random().nextInt(workerMap.size());
+            worker = new ArrayList<>(workerMap.keySet()).get(randomIndex);
+        } while (workerMap.get(worker) != WorkerStatus.UNUSED);
+
+
+        final var operationString = operation.getValue().toString();
+
+        // Enviar la petición
+        publisher.sendMore(worker.getBytes(ZMQ.CHARSET));
+        publisher.send(operationString.getBytes(ZMQ.CHARSET));
+        System.out.println("INFO/RAC (Now)\t" + worker + ' ' + operationString);
+
+        // Colocar en estado ocupado
+        workerMap.put(worker, WorkerStatus.WAITING);
+
+        // Espere la respuesta
+        while (workerMap.get(worker) == WorkerStatus.WAITING) ;
+
+        // Tomar el status
+        final var status = workerMap.get(worker);
+
+        // Actualizar el estatus
+        workerMap.put(worker, WorkerStatus.UNUSED);
+
+        // Retorna la respuesta
+        return status == WorkerStatus.OK;
     }
 
     private ZMQ.Socket publisher;
@@ -91,7 +134,7 @@ public class ResourceAssignationController implements Runnable {
     }
 
     class QueuedOperationsManager implements Runnable {
-        public static final int SLEEP_TIME = 1000;
+        public static final int SLEEP_TIME = 5000;
 
         @Override
         public void run() {
@@ -130,19 +173,60 @@ public class ResourceAssignationController implements Runnable {
                 // Subscribe to topics
                 subscriber.subscribe("OK");
                 subscriber.subscribe("FAIL");
+                subscriber.subscribe("UNIQUE");
+
+                // Topicos de los workers
+                subscriber.subscribe("CONNECT");
+                subscriber.subscribe("DISCONNECT");
+
+                System.out.println("INFO/RC\tListening");
 
                 while (!Thread.currentThread().isInterrupted()) {
                     // Get the result
                     String result = subscriber.recvStr();
 
-                    // Get the values
-                    Long value = Long.parseLong(subscriber.recvStr());
+                    if (result.equals("OK") || result.equals("FAIL")) {
+                        // Get the values
+                        Long value = Long.parseLong(subscriber.recvStr());
 
-                    // Queue the response
-                    responseSet.add(value);
+                        // Queue the response
+                        responseSet.add(value);
 
-                    // Get the operation
-                    System.out.println("INFO/WORKER\t" + result + ' ' + value);
+                        // Get the operation
+                        System.out.println("INFO/WORKER\t" + result + ' ' + value);
+
+                    } else if (result.equals("UNIQUE")) {
+
+                        final String[] tokens = subscriber.recvStr().split(" ");
+                        final var operationStatus = tokens[0];
+                        final var uuid = tokens[1];
+
+
+                        // Actualizar el worker
+                        System.out.println("UNIQUE/RES\t" + operationStatus + ' ' + uuid);
+                        workerMap.put(uuid, Objects.equals(operationStatus, "OK") ? WorkerStatus.OK : WorkerStatus.FAIL);
+
+                    } else {
+                        String workerId = subscriber.recvStr();
+
+                        switch (result) {
+                            case "CONNECT":
+                                if (!workerMap.containsKey(workerId)) {
+                                    workerMap.put(workerId, WorkerStatus.UNUSED);
+                                    System.out.println("WORKER/IN\t" + workerId);
+                                }
+                                break;
+
+                            case "DISCONNECT":
+                                System.out.println("WORKER/OUT\t" + workerId);
+                                workerMap.remove(workerId);
+                                break;
+
+                            default:
+                                System.out.println("WORKER\tUNKNOWN");
+                                break;
+                        }
+                    }
                 }
             } finally {
                 if (subscriber != null) {

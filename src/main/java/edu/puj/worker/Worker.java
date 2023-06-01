@@ -1,16 +1,19 @@
 package edu.puj.worker;
 
+import edu.puj.model.Libro;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import org.zeromq.ZMQException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Worker {
 
+    public static final String WORKER_ID = UUID.randomUUID().toString();
+
     public static void main(String[] args) throws IllegalArgumentException {
         try {
-
             // 0. Parsear los argumentos
             ParametersParser arguments = new ParametersParser();
             arguments.parseParameters(args);
@@ -22,7 +25,7 @@ public class Worker {
             System.out.println("INFO/DB:\t" + arguments.getDatabase());
 
             // 2. Crear el database querier
-            final var querier = new CouchDBQuerierI(arguments.getDatabase());
+            final var querier = new CouchDBQuerier(arguments.getDatabase());
 
             // 2. Crear el request handler
             final var requestHandler = new RequestHandler(

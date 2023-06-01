@@ -1,121 +1,121 @@
 {
   "docs": [
     {
-      "id": 1,
+      "_id": "1",
       "nombre": "El Gran Gatsby",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 2,
+      "_id": "2",
       "nombre": "1984",
       "prestado": true,
       "fecha_entrega": "2023-06-15"
     },
     {
-      "id": 3,
+      "_id": "3",
       "nombre": "Orgullo y prejuicio",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 4,
-      "nombre": "Cien años de soledad",
+      "_id": "4",
+      "nombre": "Cien annos de soledad",
       "prestado": true,
       "fecha_entrega": "2023-06-05"
     },
     {
-      "id": 5,
-      "nombre": "Matar a un ruiseñor",
+      "_id": "5",
+      "nombre": "Matar a un ruisennor",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 6,
+      "_id": "6",
       "nombre": "Don Quijote de la Mancha",
       "prestado": true,
       "fecha_entrega": "2023-06-10"
     },
     {
-      "id": 7,
+      "_id": "7",
       "nombre": "Ulises",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
       "nombre": "En busca del tiempo perd_ido",
-      "id": 8,
+      "_id": "8",
       "prestado": true,
       "fecha_entrega": "2023-06-02"
     },
     {
-      "id": 9,
+      "_id": "9",
       "nombre": "Moby Dick",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 10,
+      "_id": "10",
       "nombre": "Las aventuras de Alicia en el país de las maravillas",
       "prestado": true,
       "fecha_entrega": "2023-06-15"
     },
     {
-      "id": 11,
-      "nombre": "El gran diseño",
+      "_id": "11",
+      "nombre": "El gran disenno",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 12,
-      "nombre": "El señor de los anillos",
+      "_id": "12",
+      "nombre": "El sennor de los anillos",
       "prestado": true,
       "fecha_entrega": "2023-06-08"
     },
     {
-      "id": 13,
+      "_id": "13",
       "nombre": "Crónica de una muerte anunciada",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 14,
+      "_id": "14",
       "nombre": "Los pilares de la Tierra",
       "prestado": true,
       "fecha_entrega": "2023-06-04"
     },
     {
-      "id": 15,
+      "_id": "15",
       "nombre": "El principito",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 16,
+      "_id": "16",
       "nombre": "El alquimista",
       "prestado": true,
       "fecha_entrega": "2023-06-02"
     },
     {
-      "id": 17,
+      "_id": "17",
       "nombre": "Los juegos del hambre",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 18,
+      "_id": "18",
       "nombre": "Fahrenheit 451",
       "prestado": true,
       "fecha_entrega": "2023-06-06"
     },
     {
-      "id": 19,
+      "_id": "19",
       "nombre": "Rayuela",
       "prestado": false,
       "fecha_entrega": ""
     },
     {
-      "id": 20,
+      "_id": "20",
       "nombre": "El código Da Vinci",
       "prestado": true,
       "fecha_entrega": "2023-06-03"
