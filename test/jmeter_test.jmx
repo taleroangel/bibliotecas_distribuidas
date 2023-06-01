@@ -15,8 +15,8 @@
       <com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup guiclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroupGui" testclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup" testname="Client - Concurrency Thread Group" enabled="true">
         <elementProp name="ThreadGroup.main_controller" elementType="com.blazemeter.jmeter.control.VirtualUserController"/>
         <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
-        <stringProp name="TargetLevel">5000</stringProp>
-        <stringProp name="RampUp">15</stringProp>
+        <stringProp name="TargetLevel">500</stringProp>
+        <stringProp name="RampUp">5</stringProp>
         <stringProp name="Steps">100</stringProp>
         <stringProp name="Hold"></stringProp>
         <stringProp name="LogFilename"></stringProp>
@@ -29,12 +29,12 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="serverAddress" elementType="Argument">
                 <stringProp name="Argument.name">serverAddress</stringProp>
-                <stringProp name="Argument.value">192.168.24.10</stringProp>
+                <stringProp name="Argument.value">localhost</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="serverPort" elementType="Argument">
                 <stringProp name="Argument.name">serverPort</stringProp>
-                <stringProp name="Argument.value">5555</stringProp>
+                <stringProp name="Argument.value">5550</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="clientFile" elementType="Argument">

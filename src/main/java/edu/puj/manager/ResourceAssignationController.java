@@ -96,7 +96,7 @@ public class ResourceAssignationController implements Runnable {
 
             // Create publisher
             publisher = context.socket(SocketType.PUB);
-            publisher.bind("tcp://localhost:" + PUBLISHER_PORT);
+            publisher.bind("tcp://*:" + PUBLISHER_PORT);
 
             // Start auxiliary daemons
             operationsCheckThread.start();
@@ -168,7 +168,7 @@ public class ResourceAssignationController implements Runnable {
 
                 // Create subscriber
                 subscriber = context.socket(SocketType.SUB);
-                subscriber.bind("tcp://localhost:" + SUBSCRIBER_PORT);
+                subscriber.bind("tcp://*:" + SUBSCRIBER_PORT);
 
                 // Subscribe to topics
                 subscriber.subscribe("OK");
